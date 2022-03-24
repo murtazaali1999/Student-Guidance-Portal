@@ -1,0 +1,27 @@
+{
+  "name": "game-train-checkin-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.3",
+    "joi": "^17.6.0",
+    "mongoose": "^6.2.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/murtazaali1999/game-train-checkin-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/murtazaali1999/game-train-checkin-app/issues"
+  },
+  "homepage": "https://github.com/murtazaali1999/game-train-checkin-app#readme"
+}
