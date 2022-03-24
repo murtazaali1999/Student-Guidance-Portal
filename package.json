@@ -1,7 +1,6 @@
 {
   "name": "game-train-checkin-app",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.3",
@@ -23,5 +22,6 @@
   "bugs": {
     "url": "https://github.com/murtazaali1999/game-train-checkin-app/issues"
   },
-  "homepage": "https://github.com/murtazaali1999/game-train-checkin-app#readme"
+  "homepage": "https://github.com/murtazaali1999/game-train-checkin-app#readme",
+  "description": ""
 }
