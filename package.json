@@ -5,7 +5,8 @@
   "dependencies": {
     "express": "^4.17.3",
     "joi": "^17.6.0",
-    "mongoose": "^6.2.8"
+    "mongoose": "^6.2.8",
+    "mongoose-unique-validator": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
