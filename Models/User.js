@@ -1,31 +1,18 @@
 const mongoose = require("mongoose");
+const cids = require("cids");
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-    },
-    age: {
-      type: Number,
-    },
-    email: {
-      type: String,
-    },
-    password: {
-      type: String,
-    },
-    roll: {
-      type: String,
-      enum: { values: ["Admin", "Employee"] },
-    },
-    boardManager: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "BoardManager",
-      default: null,
-    },
-  },
-  { timestamps: true }
-);
+new cids("fddimads").toV0()
 
-const User = global.User || mongoose.model("User", userSchema);
+const userSchema = new mongoose.Schema({
+    name: {},
+    age: {},
+    email: {},
+    password: {},
+    type: {},
+})
+
+
+
+
+const User = global.User || mongoose.model("User", userSchema)
 module.exports = User;
