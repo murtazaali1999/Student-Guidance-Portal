@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
-const cids = require("cids");
-
-new cids("fddimads").toV0()
 
 const userSchema = new mongoose.Schema({
-    name: {},
-    age: {},
-    email: {},
-    password: {},
-    type: {},
+    name: { type: String, required: true },
+    age: { type: Number, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    type: { type: String, enum: ["Admin", "User"], default: "User" },
+    participated: [{ type: mongoose.Types.ObjectId, ref: "Test" }]
 })
 
 
