@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     type: { type: String, enum: ["Admin", "User"], default: "User" },
     participated: [{ type: mongoose.Types.ObjectId, ref: "Test" }],
+    resetToken: { type: Number }
 });
 
 const User = global.User || mongoose.model("User", userSchema)
