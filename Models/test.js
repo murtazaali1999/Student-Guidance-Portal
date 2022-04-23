@@ -1,20 +1,22 @@
 const mongoose = require("mongoose");
 
 const testSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
     startTime: { type: Date, required: true },
-    endTime: { type: Date, required: true },
-    participants: [{ type: mongoose.Types.ObjectId, ref: "User", default: [] }],
-    test: [{
-        type: { type: String, enum: ["Generic", "Blockchain", "Artificial-Intelligence", "Machine-Learning", "Deep-Learning"] },
-        question: [{
-            q_name: { type: String },
-            d_answer: [{ type: String }],
-            c_answer: { type: String }
-        }]
-    }]
-})
+    endTime: { type: Date, required: true, },
+    questions: [{
+        questionName: { type: String, required: true },
+        decoyAnswers: [{ type: String, required: true }],
+        correctAnswer: { answer: { type: String, required: true }, points: { type: Number, required: true } },
+    }],
+    type: {
+        type: String,
+        enum: ["Generic", "Blockchain", "Artificial-Intelligence",
+            "Machine-Learning", "Deep-Learning"], required: true
+    },
+    totalPoints: { type: Number, required: true },
+    status: { enum: ["Progress", "Pending", "Ended"], default: "Pending", type: String },
+},
+    { timestamps: true });
 
 const Test = global.Test || mongoose.model("Test", testSchema)
 module.exports = Test;
