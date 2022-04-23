@@ -78,7 +78,7 @@ const deleteTest = async (req, res) => {
 			.catch((err) => { return res.status(500).json({ error: err }) });
 
 		if (test.status != "Pending") {
-			return res.status(500).json({ error: "This test has already started finished" })
+			return res.status(500).json({ error: "This test has already started/finished" })
 		}
 
 		await Test.findOneAndDelete({ _id: test._id })
