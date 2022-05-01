@@ -5,7 +5,7 @@ const answerSchema = new mongoose.Schema({
     test: { type: mongoose.Types.ObjectId, ref: "Test", required: true },
     questions: [{
         questionName: { type: String, required: true },
-        givenAnswer: { answer: { type: String, required: true }, },
+        givenAnswer: { type: String, required: true },
     }],
     points: { type: Number, required: true }
 }, { timestamps: true });

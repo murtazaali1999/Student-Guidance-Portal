@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const roadMapSchema = new mongoose.Schema({
     name: {
-        type: String, required: true,
+        type: String,
         type: { type: String, enum: ["Blockchain", "Artificial-Intelligence", "Machine-Learning", "Deep-Learning"] },
     },
     description: { type: String, required: true },
