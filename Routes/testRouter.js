@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const epxress = require("express");
 const router = epxress.Router();
 
@@ -27,11 +26,8 @@ router.get("/get_all_test", testController.getAllTest);
 router.get("/get_single_test/:t_id", testController.getSingleTest);
 router.post("/get_test_by_type", testController.getTestsByType);
 router.post("/get_test_by_start_time", testController.getTestByStartTime);
-router.post("/submit_test/:u_id/:t_id", testController.submitTest);
 router.post("/participate_in_test/:u_id", testController.participateInTest);
 
-//cron in APP, this is callback, just call this from app.js
-router.post("/start_test");
-router.post("/end_test");
+router.post("/submit_test/:u_id/:t_id", testController.submitTest);
 
 module.exports = router;
