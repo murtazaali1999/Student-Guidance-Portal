@@ -2,14 +2,14 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cron = require("node-cron");
-
-const env = require("dotenv");// importer to use 
-
-env.config({ path: "./.env" }) //giving path to .env file
-
+const cors = require("cors");
 const MONGOURI = process.env.MONGOURI; //MONGO-URI
 const PORT = process.env.PORT; //PORT CONNECTINO
+const env = require("dotenv");// importer to use 
 
+
+env.config({ path: "./.env" }) //giving path to .env file
+app.use(cors());
 app.use(express.urlencoded({ extended: true })); //for post requests(HTML-FORMS)
 app.use(express.json({})); //for post requests(JSON)
 

@@ -37,7 +37,26 @@ const signup = async (req, res) => {
             })
             .catch((err) => {
                 return res.status(500).json({ error: err })
-            })
+            });
+
+        const message = "You have Successfully Signed up to our Virtual FYP Advisor";
+
+        try {
+            console.log("Message===============", message);
+
+            await sendEmail({
+                email: newUser.email,
+                subject: "User Registration",
+                message,
+            });
+
+            return res.status(200).send(`Email sent to ${newUser.email}`);
+
+        } catch (err) {
+            await voter.save({ validateBeforeSave: false });
+            return new Error("internal server error");
+        }
+
 
     } catch (err) {
         console.log(err)
@@ -142,6 +161,7 @@ const getResetPasswordToken = async (req, res) => {
             await voter.save({ validateBeforeSave: false });
             return new Error("internal server error");
         }
+
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: err })
