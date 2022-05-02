@@ -32,6 +32,7 @@ const signup = async (req, res) => {
         newUser
             .save()
             .then(() => {
+                newUser.password = null;
                 return res.status(200).json({ User: newUser, message: "User registerd Successfully" })
             })
             .catch((err) => {
@@ -52,11 +53,13 @@ const login = async (req, res) => {
             return res.status(300).json({ error: "One or more fields are empty" });
         }
 
-        const user = await User.findOne({ email, password });
+        let user = await User.findOne({ email, password });
 
         if (user == [] || user == undefined) {
             return res.status(400).json({ error: "User does not exist with this email and password" });
         }
+
+        user.password = null;
 
         return res.status(200).json({ User: user });
 
@@ -72,7 +75,7 @@ const updateCredentials = async (req, res) => {
             return res.status(300).json({ error: "One or more fieldsa are empty" });
         }
 
-        const user = User.findOne({ _id: req.params.u_id });
+        const user = await User.findOne({ _id: req.params.u_id });
 
         if (user == {} || user == undefined) {
             return res.status(400).json({ error: "One or more fieldsa are empty" });
@@ -81,8 +84,10 @@ const updateCredentials = async (req, res) => {
         user.name = name;
         user.age = age;
 
-        user.save()
+        user
+            .save()
             .then(() => {
+                user.password = null;
                 return res.status(200).json({ User: user, message: "User Updated Successfully" })
             })
             .catch((err) => {
@@ -104,7 +109,7 @@ const getResetPasswordToken = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if (!user) {
+        if (!user || user == {} || user == null) {
             return res.send("Voter with the give email is not present");
         }
 
@@ -121,8 +126,7 @@ const getResetPasswordToken = async (req, res) => {
         await user.save();
 
         const message = `Your "Reset Password Token" has been generated. Kindly click the link below to reset it.
-      \n\n${url}\n\n
-      If you have not requested this email, you may ignore it.`;
+      \n\n${url}\n\n`;
 
         try {
             console.log("Message===============", message);
@@ -133,11 +137,11 @@ const getResetPasswordToken = async (req, res) => {
                 message,
             });
             res.status(200).send(`Email sent to ${user.email}`);
+
         } catch (err) {
             await voter.save({ validateBeforeSave: false });
             return new Error("internal server error");
         }
-        // res.status(200).send("Check Your Email")
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: err })
@@ -155,14 +159,21 @@ const resetPassword = async (req, res) => {
 
         const user = await User.findOne({ resetToken });
 
-        if (user == {} || user == undefined) {
+        if (user == {} || user == undefined || user == null) {
             return res.status(400).json({ error: "Token is not correct or it has been expired" });
         }
 
         user.resetToken = null;
         user.password = confirmPassword;
 
-        await user.save();
+        await user
+            .save()
+            .then(() => {
+                return res.status(200).json({ message: "Password Successfully Updated" });
+            })
+            .catch((err) => {
+                return res.status(500).status({ error: err });
+            });
 
     } catch (err) {
         console.log(err)
@@ -176,6 +187,7 @@ const getUser = async (req, res) => {
         if (user == {} || user == undefined) {
             return res.status(400).json({ error: "User with this ID does not exist" });
         }
+        user.password = null;
 
         res.status(200).json({ User: user });
     } catch (err) {

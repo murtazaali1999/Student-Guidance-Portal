@@ -1,11 +1,13 @@
 const Test = require("../Models/test");
 const User = require("../Models/user");
 const Answer = require("../Models/answeredQuestions");
+const sendEmail = require("../utils/nodeMailer");
 
 const createTest = async (req, res) => {
 	try { //default epoch time
-		const { startTime, endTime, type, questions, totalPoints } = req.body
-		if (!startTime || !endTime || !type || !questions || !totalPoints) {
+		const { startTime, endTime, type, questions } = req.body;
+
+		if (!startTime || !endTime || !type || !questions) {
 			return res.status(300).json({ message: "One or More fields are empty" });
 		}
 
@@ -18,7 +20,6 @@ const createTest = async (req, res) => {
 			endTime,
 			type,
 			questions,
-			totalPoints
 		});
 
 		newTest.save()
@@ -59,6 +60,7 @@ const updateTestTime = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const updateQuestions = async (req, res) => {
 	try {
 		const { questions } = req.body
@@ -96,6 +98,7 @@ const deleteTest = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const getAllTest = async (req, res) => {
 	try {
 		const tests = await Test.find();
@@ -111,6 +114,7 @@ const getAllTest = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const getSingleTest = async (req, res) => {
 	try {
 		const test = await Test.findOne({ _id: req.params.t_id });
@@ -124,6 +128,7 @@ const getSingleTest = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const getTestsByType = async (req, res) => {
 	try {
 		const { type } = req.body;
@@ -144,6 +149,7 @@ const getTestsByType = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const getTestByStartTime = async (req, res) => {
 	try {
 		const { startTime } = req.body;
@@ -172,6 +178,7 @@ const getTestByStartTime = async (req, res) => {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const participateInTest = async (req, res) => {
 	try {
 		const { t_id } = req.body;
@@ -266,6 +273,13 @@ const submitTest = async (req, res) => {
 			return res.status(400).json({ message: "User cannot participate in this test,because user has not registered themselves for this test" });
 		}
 
+		const answers = await Answer.findOne({ user: user._id, test: test._id });
+		console.log(answers);
+		if (answers != null || answers != {}) {
+			console.log("here answersd");
+			return res.status(500).json({ message: "User has already Participated" });
+		}
+
 		let points = 0;
 		for (var i = 0; i < test.questions.length; i++) {
 			for (var j = 0; j < questions.length; j++) {
@@ -274,7 +288,8 @@ const submitTest = async (req, res) => {
 					if (questions[j].givenAnswer == test.questions[i].correctAnswer.answer) {
 						console.log(questions[j].questionName, test.questions[i].questionName);
 
-						points = test.questions[j].correctAnswer.points;
+						points += test.questions[j].correctAnswer.points;
+						console.log("Points Added");
 					}
 				}
 			}
@@ -289,62 +304,84 @@ const submitTest = async (req, res) => {
 
 		console.log(points);
 
-		/* 		newAnswer
-					.save()
-					.then(() => { return res.status(200).json({ message: "Test Submitted Successfully" }) })
-					.catch((err) => {
-						return res.status(500).json({ error: err })
-					});
-		 */
+		newAnswer
+			.save()
+			.then(() => { return res.status(200).json({ message: "Test Submitted Successfully" }) })
+			.catch((err) => {
+				return res.status(500).json({ error: err })
+			});
+
+		const message = `Your result is : ${newAnswer}`;
+
+		await sendEmail({
+			email: user.email,
+			subject: "Test Result",
+			message,
+		})
+			.then(() => {
+				return console.log("Test Results Sent To User");
+			})
+			.catch((err) => {
+				return console.log(err);
+			});
+
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: err })
 	}
 }
 
-
 const startTest = async (req, res) => {
 	try {
 		const tests = await Test.find({})
 			.catch((err) => { return res.status(500).json({ error: err }) });
+
 		let check1 = false;
-		tests.map((test) => {
-			if (Date.now() >= test.startTime && Date.now() < test.endTime) {
-				test.status = "Progress";
+
+		tests.map(async (test) => {
+			if (Date.now() >= test.startTime && test.status == "Pending") {
+
+				await Test
+					.updateOne({ _id: test._id }, { status: "Progress" })
+					.catch((err) => { console.log(err); })
+
 				check1 = true;
 			}
-		})
+		});
+
 		if (!check1)
 			return res.status(500).json({ message: "No Test has started Yet" })
-
-		Test
-			.insertMany(tests)
-			.then(() => { return res.status(200).json({ message: "Tests have started" }) })
-			.catch((err) => { return res.status(500).json({ error: err }) }); //bulk insert
 
 	} catch (err) {
 		return res.status(500).json({ error: err })
 	}
 }
+
 const endTest = async (req, res) => {
 	try {
+
 		const tests = await Test.find({})
+			.lean()
 			.catch((err) => { return res.status(500).json({ error: err }) });
 
 		let check1 = false;
-		tests.map((test) => {
-			if (Date.now() >= test.endTime) {
-				test.status = "Ended";
-				check1 = true;
-			}
-		})
-		if (!check1)
-			return res.status(500).json({ message: "No Test have ended Yet" })
 
-		Test
-			.insertMany(tests)
-			.then(() => { return res.status(200).json({ message: "Tests have started" }) })
-			.catch((err) => { return res.status(500).json({ error: err }) }); //bulk insert
+		tests.map(async (test) => {
+			if (Date.now() >= test.endTime && test.status == "Progress") {
+
+				await Test
+					.updateOne({ _id: test._id }, { status: "Ended" })
+					.catch((err) => { console.log(err); })
+
+				check1 = true;
+				console.log("here");
+			}
+		});
+
+		if (!check1)
+			console.log("Tests havent Started Yet");
+		else
+			console.log("Some Tests Ended");
 
 	} catch (err) {
 		return res.status(500).json({ error: err })
