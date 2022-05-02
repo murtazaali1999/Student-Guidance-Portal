@@ -73,7 +73,7 @@ const getAllRoadMap = async (req, res) => {
             return res.status(400).json({ message: "RoadMaps not Present" })
         }
 
-        res.status(200).json({ message: roadMaps });
+        return res.status(200).json({ message: roadMaps });
 
     } catch (err) {
         console.log(err)
@@ -92,7 +92,7 @@ const getSingleRoadMap = async (req, res) => {
             return res.status(400).json({ message: "RoadMap not Present with this ID" })
         }
 
-        res.status(200).json({ message: roadMap });
+        return res.status(200).json({ message: roadMap });
 
     } catch (err) {
         console.log(err)
@@ -100,11 +100,10 @@ const getSingleRoadMap = async (req, res) => {
     }
 }
 
-
 const getSingleRoadMapforUser = async (req, res) => {
     try {
         const answers = await Answer
-            .find()
+            .find({ user: req.params.u_id })
             .populate("test")
             .catch((err) => {
                 return res.status(500).json({ error: err })
@@ -113,7 +112,6 @@ const getSingleRoadMapforUser = async (req, res) => {
         if (answers == [] || answers == undefined) {
             return res.status(400).json({ error: "Answers not exist" })
         }
-
 
         const roadMaps = await RoadMap
             .find()
@@ -127,21 +125,20 @@ const getSingleRoadMapforUser = async (req, res) => {
 
         const userRoadMaps = [];
 
-        for (var i = 0; i < answers.length; i++) {
-            for (var j = 0; j < roadMaps.length; j++) {
-                if (answers[i].user == req.params.u_id && answers[i].points >= 70) {
-                    if (answers[i].type == roadMaps.name) {
-                        userRoadMaps.push(roadMaps[j]);
-                    }
+        for (let i = 0; i < answers.length; i++) {
+            for (let j = 0; j < roadMaps.length; j++) {
+                if (answers[i].test.type == roadMaps[j].name && answers[i].points >= 70) {
+                    userRoadMaps.push(roadMaps[j]);
                 }
             }
         }
 
-        res.status(200).json({ message: userRoadMaps });
+        console.log(userRoadMaps);
+        return res.status(200).json({ message: userRoadMaps });
 
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({ error: err })
+        console.log(err);
+        return res.status(500).json({ error: err });
     }
 }
 
@@ -168,7 +165,10 @@ const getRoadMapByName = async (req, res) => {
 const deleteRoadMap = async (req, res) => {
     try {
         await RoadMap.findOneAndDelete({ _id: req.params.r_id })
-            .then(() => {
+            .then((resp) => {
+                if (resp == {} || resp == undefined || resp == null) {
+                    return res.status(400).json({ message: "RoadMap Not Found with this ID" })
+                }
                 return res.status(200).json({ message: "RoadMap Deleted Successfully" })
             })
             .catch((err) => { return res.status(500).json({ error: err }) })
@@ -178,8 +178,6 @@ const deleteRoadMap = async (req, res) => {
         return res.status(500).json({ error: err })
     }
 }
-
-
 
 module.exports = {
     createRoadMap,
