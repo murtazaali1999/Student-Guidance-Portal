@@ -13,7 +13,6 @@ const testSchema = new mongoose.Schema({
         enum: ["Generic", "Blockchain", "Artificial-Intelligence",
             "Machine-Learning", "Deep-Learning"], required: true
     },
-    totalPoints: { type: Number, required: true },
     status: { enum: ["Progress", "Pending", "Ended"], default: "Pending", type: String },
 },
     { timestamps: true });
