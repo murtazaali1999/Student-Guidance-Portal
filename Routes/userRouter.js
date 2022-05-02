@@ -17,10 +17,10 @@ const userController = require("../Controllers/userController");
 
 router.post("/sigup", userController.signup);
 router.post("/login", userController.login);
-router.post("/update_credentials", userController.updateCredentials);
+router.post("/update_credentials/:u_id", userController.updateCredentials);
 router.post("/get_reset_password_token", userController.getResetPasswordToken);
 router.post("/reset/password", userController.resetPassword);
-router.post("/get_user/:u_id", userController.getUser);
-router.post("/get_all_user", userController.getAllUser);
+router.get("/get_user/:u_id", userController.getUser);
+router.get("/get_all_user", userController.getAllUser);
 
 module.exports = router;

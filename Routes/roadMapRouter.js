@@ -15,8 +15,8 @@ router.post("/create_roadmap", roadMapController.createRoadMap);
 router.post("/update_roadmap/:r_id", roadMapController.updateRoadMap);
 router.get("/get_all_roadmap", roadMapController.getAllRoadMap);
 router.get("/get_single_roadmap/:r_id", roadMapController.getSingleRoadMap);
-router.get("/get_single_roadmap_for_user/:u_id", roadMapController.getSingleRoadMapforUser);
-router.get("/get_roadmap_by_name/:r_id", roadMapController.getRoadMapByName);
+router.post("/get_roadmap_by_name", roadMapController.getRoadMapByName);
 router.post("/delete_roadmap/:r_id", roadMapController.deleteRoadMap);
+router.get("/get_single_roadmap_for_user/:u_id", roadMapController.getSingleRoadMapforUser);
 
 module.exports = router;
