@@ -38,5 +38,5 @@ mongoose.connect(MONGOURI, () => {
 });
 
 //CRON Schedule Start and Stop Test
-//cron.schedule("*/15 * * * * *", testController.startTest);
-//cron.schedule("*/15 * * * * *", testController.endTest);
+cron.schedule("*/15 * * * * *", testController.startTest);
+cron.schedule("*/10 * * * * *", testController.endTest);
